@@ -6,6 +6,8 @@ import (
 	"template_gin_api/misc/session"
 )
 
+const SessionKey = "session"
+
 type SessionRedis struct {
 	redis *baseRedis
 }

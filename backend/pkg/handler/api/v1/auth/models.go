@@ -2,21 +2,30 @@ package auth
 
 import (
 	"template_gin_api/misc/session"
+	"template_gin_api/pkg/repository/sql"
 )
 
-type responseMe struct {
-	*session.Session
-}
-
-type formLogin struct {
+type loginForm struct {
 	Login    string `json:"login" binding:"required"`
 	Password string `json:"password" binding:"required,min=8,max=32"`
 }
 
-type responseLogin struct {
+type loginResponse struct {
 	*session.Session
 }
 
-type responseLogout struct {
+type logoutResponse struct {
 	*session.Session
+}
+
+type meResponse struct {
+	*session.Session
+}
+
+type signUpForm struct {
+	*sql.CreateUser
+}
+
+type signUpResponse struct {
+	*sql.User
 }

@@ -6,29 +6,24 @@ import (
 	"template_gin_api/pkg/service"
 )
 
-type AuthRouter struct {
-	*baseApi.BaseAPIRouter
-	authService  *service.AuthService
-	usersService *service.UsersService
+type router struct {
+	*baseApi.Router
+	service *service.AuthService
 }
 
-func NewAuthRouter(
-	baseAPIHandler *baseApi.BaseAPIRouter,
-	authService *service.AuthService,
-	usersService *service.UsersService,
-) *AuthRouter {
-	return &AuthRouter{
-		BaseAPIRouter: baseAPIHandler,
-		authService:   authService,
-		usersService:  usersService,
+func NewRouter(
+	baseAPIRouter *baseApi.Router,
+	service *service.AuthService,
+) baseApi.ApiRouter {
+	return &router{
+		Router:  baseAPIRouter,
+		service: service,
 	}
 }
 
-func (h *AuthRouter) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	router.GET("/me", h.me)
-	if h.Config.Debug {
-		router.POST("/sign_up", h.signUp) //ТОЛЬКО ДЛЯ ТЕСТОВ, на продакшене использовать /users/create
-	}
+	router.POST("/sign_up", h.signUp)
 	router.POST("/login", h.login)
 	router.POST("/logout", h.Middleware.AuthRequired, h.logout)
 }

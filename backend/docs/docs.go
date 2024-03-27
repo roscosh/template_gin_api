@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/auth.formLogin"
+                            "$ref": "#/definitions/auth.loginForm"
                         }
                     }
                 ],
@@ -42,7 +42,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.responseLogin"
+                            "$ref": "#/definitions/auth.loginResponse"
                         }
                     },
                     "401": {
@@ -73,7 +73,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.responseLogout"
+                            "$ref": "#/definitions/auth.logoutResponse"
                         }
                     },
                     "401": {
@@ -104,7 +104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/auth.responseMe"
+                            "$ref": "#/definitions/auth.meResponse"
                         }
                     },
                     "401": {
@@ -141,7 +141,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.FormCreateUser"
+                            "$ref": "#/definitions/auth.signUpForm"
                         }
                     }
                 ],
@@ -149,46 +149,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.ResponseCreateUser"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/baseApi.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "createUser",
-                "parameters": [
-                    {
-                        "description": "createUser",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/users.FormCreateUser"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/users.ResponseCreateUser"
+                            "$ref": "#/definitions/auth.signUpResponse"
                         }
                     },
                     "404": {
@@ -215,7 +176,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -226,7 +187,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.formChangePassword"
+                            "$ref": "#/definitions/users.changePasswordForm"
                         }
                     }
                 ],
@@ -234,7 +195,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseChangePassword"
+                            "$ref": "#/definitions/users.changePasswordResponse"
                         }
                     },
                     "404": {
@@ -257,7 +218,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "getAllUsers",
+                "summary": "getAll",
                 "parameters": [
                     {
                         "type": "string",
@@ -269,7 +230,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseGetUsers"
+                            "$ref": "#/definitions/users.getAllResponse"
                         }
                     },
                     "404": {
@@ -292,22 +253,22 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "editUser",
+                "summary": "edit",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "editUser",
+                        "description": "edit",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/users.formEditUser"
+                            "$ref": "#/definitions/users.editForm"
                         }
                     }
                 ],
@@ -315,7 +276,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseEditUser"
+                            "$ref": "#/definitions/users.editResponse"
                         }
                     },
                     "404": {
@@ -336,11 +297,11 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "deleteUser",
+                "summary": "delete",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "User ID",
+                        "description": "ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -350,7 +311,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/users.responseDeleteUser"
+                            "$ref": "#/definitions/users.deleteResponse"
                         }
                     },
                     "404": {
@@ -364,7 +325,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "auth.formLogin": {
+        "auth.loginForm": {
             "type": "object",
             "required": [
                 "login",
@@ -381,7 +342,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.responseLogin": {
+        "auth.loginResponse": {
             "type": "object",
             "properties": {
                 "expires": {
@@ -404,7 +365,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.responseLogout": {
+        "auth.logoutResponse": {
             "type": "object",
             "properties": {
                 "expires": {
@@ -427,7 +388,7 @@ const docTemplate = `{
                 }
             }
         },
-        "auth.responseMe": {
+        "auth.meResponse": {
             "type": "object",
             "properties": {
                 "expires": {
@@ -446,6 +407,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.signUpForm": {
+            "type": "object",
+            "required": [
+                "login",
+                "name",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                }
+            }
+        },
+        "auth.signUpResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
                     "type": "string"
                 }
             }
@@ -475,49 +474,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.FormCreateUser": {
-            "type": "object",
-            "required": [
-                "is_admin",
-                "login",
-                "name",
-                "password"
-            ],
-            "properties": {
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 8
-                }
-            }
-        },
-        "users.ResponseCreateUser": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "users.formChangePassword": {
+        "users.changePasswordForm": {
             "type": "object",
             "required": [
                 "password"
@@ -530,21 +487,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.formEditUser": {
-            "type": "object",
-            "properties": {
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "login": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "users.responseChangePassword": {
+        "users.changePasswordResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -561,7 +504,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseDeleteUser": {
+        "users.deleteResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -578,7 +521,21 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseEditUser": {
+        "users.editForm": {
+            "type": "object",
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "users.editResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -595,7 +552,7 @@ const docTemplate = `{
                 }
             }
         },
-        "users.responseGetUsers": {
+        "users.getAllResponse": {
             "type": "object",
             "properties": {
                 "data": {

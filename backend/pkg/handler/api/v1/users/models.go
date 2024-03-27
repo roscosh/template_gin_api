@@ -2,39 +2,33 @@ package users
 
 import "template_gin_api/pkg/repository/sql"
 
-type formGetUsers struct {
+type changePasswordResponse struct {
+	*sql.User
+}
+
+type changePasswordForm struct {
+	Password string `json:"password" binding:"required,min=8,max=32"`
+}
+
+type deleteResponse struct {
+	*sql.User
+}
+
+type editForm struct {
+	Name    *string `json:"name"`
+	Login   *string `json:"login"`
+	IsAdmin *bool   `json:"is_admin"`
+}
+
+type editResponse struct {
+	*sql.User
+}
+
+type getAllForm struct {
 	Search string `form:"search"`
 }
 
-type responseGetUsers struct {
+type getAllResponse struct {
 	Data  []sql.User `json:"data"`
 	Total int        `json:"total"`
-}
-
-type responseDeleteUser struct {
-	*sql.User
-}
-
-type formEditUser struct {
-	sql.EditUser
-}
-
-type responseEditUser struct {
-	*sql.User
-}
-
-type responseChangePassword struct {
-	*sql.User
-}
-
-type formChangePassword struct {
-	sql.ChangePassword
-}
-
-type FormCreateUser struct {
-	*sql.CreateUser
-}
-
-type ResponseCreateUser struct {
-	*sql.User
 }

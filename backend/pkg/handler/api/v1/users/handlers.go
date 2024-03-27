@@ -3,139 +3,116 @@ package users
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"net/http"
 	"template_gin_api/pkg/handler/api/base_api"
+	"template_gin_api/pkg/repository/sql"
 )
-
-// @Summary getAllUsers
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param q query formGetUsers true "getAllUsers"
-// @Success 200 {object} responseGetUsers
-// @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/get_all [get]
-func (h *UsersRouter) getAllUsers(c *gin.Context) {
-	var form formGetUsers
-	err := c.ShouldBindWith(&form, binding.Query)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	users, total, err := h.usersService.GetAllUsers(form.Search)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	c.JSON(
-		http.StatusOK,
-		responseGetUsers{
-			Data:  users,
-			Total: total,
-		},
-	)
-}
-
-// @Summary createUser
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param input body FormCreateUser true "createUser"
-// @Success 200 {object} ResponseCreateUser
-// @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/ [post]
-func (h *UsersRouter) createUser(c *gin.Context) {
-	var form FormCreateUser
-	err := c.ShouldBindWith(&form, binding.JSON)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	user, err := h.usersService.Create(form.CreateUser)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, ResponseCreateUser{User: user})
-}
-
-// @Summary deleteUser
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param id path int true "User ID"
-// @Success 200 {object} responseDeleteUser
-// @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/{id} [delete]
-func (h *UsersRouter) deleteUser(c *gin.Context) {
-	id, err := baseApi.GetPathID(c)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	user, err := h.usersService.Delete(id)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, responseDeleteUser{User: user})
-}
-
-// @Summary editUser
-// @Tags users
-// @Accept json
-// @Produce json
-// @Param id path int true "User ID"
-// @Param input body formEditUser true "editUser"
-// @Success 200 {object} responseEditUser
-// @Failure 404 {object} baseApi.ErrorResponse
-// @Router /users/{id} [put]
-func (h *UsersRouter) editUser(c *gin.Context) {
-	id, err := baseApi.GetPathID(c)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-
-	var form formEditUser
-	err = c.ShouldBindWith(&form, binding.JSON)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	user, err := h.usersService.Edit(id, form.EditUser)
-	if err != nil {
-		baseApi.Response404(c, err)
-		return
-	}
-	c.JSON(http.StatusOK, responseEditUser{User: user})
-}
 
 // @Summary changePassword
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param id path int true "User ID"
-// @Param input body formChangePassword true "changePassword"
-// @Success 200 {object} responseChangePassword
+// @Param id path int true "ID"
+// @Param input body changePasswordForm true "changePassword"
+// @Success 200 {object} changePasswordResponse
 // @Failure 404 {object} baseApi.ErrorResponse
 // @Router /users/change_password/{id} [put]
-func (h *UsersRouter) changePassword(c *gin.Context) {
+func (h *router) changePassword(c *gin.Context) {
 	id, err := baseApi.GetPathID(c)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	var form formChangePassword
+	var form changePasswordForm
 	err = c.ShouldBindWith(&form, binding.JSON)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	user, err := h.usersService.ChangePassword(id, form.ChangePassword)
+	user, err := h.service.ChangePassword(id, form.Password)
 	if err != nil {
 		baseApi.Response404(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, responseChangePassword{User: user})
+	baseApi.Response200(c, changePasswordResponse{User: user})
+}
+
+// @Summary delete
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "ID"
+// @Success 200 {object} deleteResponse
+// @Failure 404 {object} baseApi.ErrorResponse
+// @Router /users/{id} [delete]
+func (h *router) delete(c *gin.Context) {
+	id, err := baseApi.GetPathID(c)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	user, err := h.service.Delete(id)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	baseApi.Response200(c, deleteResponse{User: user})
+}
+
+// @Summary edit
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "ID"
+// @Param input body editForm true "edit"
+// @Success 200 {object} editResponse
+// @Failure 404 {object} baseApi.ErrorResponse
+// @Router /users/{id} [put]
+func (h *router) edit(c *gin.Context) {
+	id, err := baseApi.GetPathID(c)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+
+	var form editForm
+	err = c.ShouldBindWith(&form, binding.JSON)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	var sqlForm = sql.EditUser{
+		Name:    form.Name,
+		Login:   form.Login,
+		IsAdmin: form.IsAdmin,
+	}
+
+	user, err := h.service.Edit(id, &sqlForm)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	baseApi.Response200(c, editResponse{User: user})
+}
+
+// @Summary getAll
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param q query getAllForm true "getAll"
+// @Success 200 {object} getAllResponse
+// @Failure 404 {object} baseApi.ErrorResponse
+// @Router /users/get_all [get]
+func (h *router) getAll(c *gin.Context) {
+	var form getAllForm
+	err := c.ShouldBindWith(&form, binding.Query)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	users, total, err := h.service.GetAll(form.Search)
+	if err != nil {
+		baseApi.Response404(c, err)
+		return
+	}
+	baseApi.Response200(c, getAllResponse{Data: users, Total: total})
 }

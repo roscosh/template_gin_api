@@ -8,27 +8,28 @@ import (
 	"template_gin_api/pkg/service"
 )
 
-type V1Router struct {
-	*baseApi.BaseAPIRouter
+type router struct {
+	*baseApi.Router
 	service *service.Service
 }
 
-func NewV1Router(
-	baseAPIHandler *baseApi.BaseAPIRouter,
+func NewRouter(
+	baseAPIRouter *baseApi.Router,
 	service *service.Service,
-) *V1Router {
-	return &V1Router{
-		BaseAPIRouter: baseAPIHandler,
-		service:       service,
+) baseApi.ApiRouter {
+	return &router{
+		Router:  baseAPIRouter,
+		service: service,
 	}
 }
 
-func (h *V1Router) RegisterRoutes(router *gin.RouterGroup) {
+func (h *router) RegisterHandlers(router *gin.RouterGroup) {
 	authGroup := router.Group("/auth")
-	authRouter := auth.NewAuthRouter(h.BaseAPIRouter, h.service.Authorization, h.service.Users)
-	authRouter.RegisterRoutes(authGroup)
+	authRouter := auth.NewRouter(h.Router, h.service.Authorization)
+	authRouter.RegisterHandlers(authGroup)
 
-	usersGroup := router.Group("/users", h.Middleware.AuthRequired)
-	usersRouter := users.NewUsersRouter(h.BaseAPIRouter, h.service.Users)
-	usersRouter.RegisterRoutes(usersGroup)
+	usersGroup := router.Group("/users", h.Middleware.AdminRequired)
+	usersRouter := users.NewRouter(h.Router, h.service.Users)
+	usersRouter.RegisterHandlers(usersGroup)
+
 }

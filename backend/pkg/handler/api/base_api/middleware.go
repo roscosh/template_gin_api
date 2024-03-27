@@ -9,19 +9,19 @@ import (
 )
 
 const (
-	UserCtx = "userId"
+	userCtx = "userId"
 )
 
-type Handler struct {
+type Middleware struct {
 	service *service.MiddlewareService
 	config  *misc.Config
 }
 
-func NewHandler(service *service.MiddlewareService, config *misc.Config) *Handler {
-	return &Handler{service: service, config: config}
+func NewMiddleware(service *service.MiddlewareService, config *misc.Config) *Middleware {
+	return &Middleware{service: service, config: config}
 }
 
-func (h *Handler) GetSession(c *gin.Context) {
+func (h *Middleware) SessionRequired(c *gin.Context) {
 	token, _ := c.Cookie(session.CookieSessionName)
 	sessionObj, err := h.service.GetExistSession(token)
 	if err != nil {
@@ -32,7 +32,7 @@ func (h *Handler) GetSession(c *gin.Context) {
 			return
 		}
 	}
-	c.Set(UserCtx, sessionObj)
+	c.Set(userCtx, sessionObj)
 
 	SetCookie(c, sessionObj)
 	c.Next()
@@ -40,8 +40,8 @@ func (h *Handler) GetSession(c *gin.Context) {
 	h.service.UpdateSession(sessionObj)
 }
 
-func (h *Handler) AdminRequired(c *gin.Context) {
-	sessionObj := c.MustGet(UserCtx).(*session.Session)
+func (h *Middleware) AdminRequired(c *gin.Context) {
+	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAdmin() {
 		Response403(c, errors.New("Нужны права администратора для этого запроса!"))
@@ -50,8 +50,8 @@ func (h *Handler) AdminRequired(c *gin.Context) {
 	}
 }
 
-func (h *Handler) AuthRequired(c *gin.Context) {
-	sessionObj := c.MustGet(UserCtx).(*session.Session)
+func (h *Middleware) AuthRequired(c *gin.Context) {
+	sessionObj := GetSession(c)
 
 	if !sessionObj.IsAuthenticated() {
 		Response401(c, errors.New("Нужно залогиниться для этого запроса!"))
